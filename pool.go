@@ -42,7 +42,8 @@ func (p *Pool) Add(pbs ...*ProgressBar) {
 	p.m.Lock()
 	defer p.m.Unlock()
 	for _, bar := range pbs {
-		bar.Start()
+		bar.poolStart()
+		p.RefreshRate = defaultRefreshRate
 		p.bars = append(p.bars, bar)
 	}
 }
@@ -116,4 +117,21 @@ func (p *Pool) print(first bool) bool {
 	}
 	p.lastBarsCount = len(p.bars)
 	return isFinished
+}
+
+func (pb *ProgressBar) poolStart() *ProgressBar {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+	if pb.finish != nil {
+		return pb
+	}
+	pb.configure()
+	pb.finished = false
+	pb.state = nil
+	pb.startTime = time.Now()
+	if st, ok := pb.vars[Static].(bool); ok && st {
+		return pb
+	}
+
+	return pb
 }
