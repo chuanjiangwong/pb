@@ -5,14 +5,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cheggaaa/pb"
+	"github.com/chuanjiangwong/pb/v3"
 )
 
 func Example_multiple() {
 	// create bars
-	first := pb.New(200).Prefix("First ")
-	second := pb.New(200).Prefix("Second ")
-	third := pb.New(200).Prefix("Third ")
+	first := pb.New(200)
+	second := pb.New(200)
+	third := pb.New(200)
 	// start pool
 	pool, err := pb.StartPool(first, second, third)
 	if err != nil {

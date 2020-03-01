@@ -1,8 +1,7 @@
-// +build linux darwin freebsd netbsd openbsd solaris dragonfly windows
-
 package pb
 
 import (
+	"fmt"
 	"io"
 	"sync"
 	"time"
@@ -43,19 +42,12 @@ func (p *Pool) Add(pbs ...*ProgressBar) {
 	p.m.Lock()
 	defer p.m.Unlock()
 	for _, bar := range pbs {
-		bar.ManualUpdate = true
-		bar.NotPrint = true
 		bar.Start()
 		p.bars = append(p.bars, bar)
 	}
 }
 
 func (p *Pool) Start() (err error) {
-	p.RefreshRate = DefaultRefreshRate
-	p.shutdownCh, err = lockEcho()
-	if err != nil {
-		return
-	}
 	p.workerCh = make(chan struct{})
 	go p.writer()
 	return
@@ -100,5 +92,28 @@ func (p *Pool) Stop() error {
 	case <-p.workerCh:
 	}
 
-	return unlockEcho()
+	return nil
+}
+
+func (p *Pool) print(first bool) bool {
+	p.m.Lock()
+	defer p.m.Unlock()
+	var out string
+	if !first {
+		out = fmt.Sprintf("\033[%dA", p.lastBarsCount)
+	}
+	isFinished := true
+	for _, bar := range p.bars {
+		if !bar.finished {
+			isFinished = false
+		}
+		out += fmt.Sprintf("\r%s\n", bar.String())
+	}
+	if p.Output != nil {
+		fmt.Fprint(p.Output, out)
+	} else {
+		fmt.Print(out)
+	}
+	p.lastBarsCount = len(p.bars)
+	return isFinished
 }
