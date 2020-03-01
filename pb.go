@@ -15,11 +15,11 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 
-	"github.com/cheggaaa/pb/v3/termutil"
+	"github.com/chuanjiangwong/pb/termutil"
 )
 
 // Version of ProgressBar library
-const Version = "3.0.4"
+const Version = "3.0.5"
 
 type key int
 
