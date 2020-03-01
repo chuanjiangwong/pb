@@ -1,4 +1,4 @@
-module github.com/chuanjiangwong/pb
+module github.com/chuanjiangwong/pb/v4
 
 go 1.13
 
