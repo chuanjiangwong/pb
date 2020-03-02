@@ -128,10 +128,6 @@ func (pb *ProgressBar) poolStart() *ProgressBar {
 	pb.configure()
 	pb.finished = false
 	pb.state = nil
-	pb.startTime = time.Now()
-	if st, ok := pb.vars[Static].(bool); ok && st {
-		return pb
-	}
 
 	return pb
 }
